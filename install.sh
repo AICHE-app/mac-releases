@@ -100,11 +100,11 @@ hdiutil detach "$MOUNT_POINT" -quiet
 # BYPASS GATEKEEPER - The Magic!
 echo -e "${GREEN}🔓 Configuring security settings...${NC}"
 
-# 1. Remove quarantine flag (bypass Gatekeeper)
-xattr -rd com.apple.quarantine "/Applications/AICHE Desktop.app" 2>/dev/null || true
+# 1. Remove quarantine flag (bypass Gatekeeper) 
+xattr -d com.apple.quarantine "/Applications/AICHE Desktop.app" 2>/dev/null || true
 
 # 2. Clear all extended attributes
-xattr -cr "/Applications/AICHE Desktop.app" 2>/dev/null || true
+xattr -c "/Applications/AICHE Desktop.app" 2>/dev/null || true
 
 # 3. Ad-hoc sign locally (makes macOS trust it more)
 if command -v codesign &> /dev/null; then
