@@ -65,13 +65,29 @@ fi
 
 # Mount DMG
 echo -e "${GREEN}📦 Mounting installer...${NC}"
-MOUNT_POINT=$(hdiutil attach "$DMG_PATH" -nobrowse -quiet | grep "AICHE Desktop" | cut -f 3)
-
-if [ -z "$MOUNT_POINT" ]; then
+MOUNT_OUTPUT=$(hdiutil attach "$DMG_PATH" -nobrowse 2>&1)
+if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Failed to mount DMG${NC}"
+    echo "$MOUNT_OUTPUT"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
+
+# Extract mount point - handle different possible volume names
+MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep -E "AICHE Desktop" | tail -1 | awk '{print $NF}')
+
+if [ -z "$MOUNT_POINT" ]; then
+    # Fallback: try to find mount point differently
+    MOUNT_POINT=$(mount | grep -E "AICHE Desktop" | head -1 | awk '{print $3}')
+fi
+
+if [ -z "$MOUNT_POINT" ]; then
+    echo -e "${RED}❌ Could not find mount point${NC}"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+echo -e "${BLUE}Mount point: $MOUNT_POINT${NC}"
 
 # Copy to Applications
 echo -e "${GREEN}📋 Installing to Applications...${NC}"
