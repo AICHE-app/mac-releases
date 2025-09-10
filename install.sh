@@ -4,6 +4,13 @@
 
 set -e
 
+# Detect if running in non-interactive mode (piped)
+if [ -t 0 ]; then
+    INTERACTIVE=true
+else
+    INTERACTIVE=false
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -18,11 +25,17 @@ echo ""
 # Check if already installed
 if [ -d "/Applications/AICHE Desktop.app" ]; then
     echo -e "${YELLOW}⚠️  AICHE Desktop is already installed.${NC}"
-    read -p "Reinstall/Update? (y/n) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 0
+    
+    if [ "$INTERACTIVE" = true ]; then
+        read -p "Reinstall/Update? (y/n) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            exit 0
+        fi
+    else
+        echo "Auto-updating in non-interactive mode..."
     fi
+    
     echo "Removing old version..."
     rm -rf "/Applications/AICHE Desktop.app"
 fi
@@ -102,11 +115,17 @@ echo "⌨️  Hotkeys:"
 echo "   • Check the app for current hotkey bindings"
 echo ""
 
-# Ask if user wants to launch now
-read -p "🚀 Launch AICHE Desktop now? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "${GREEN}Launching AICHE Desktop...${NC}"
+# Ask if user wants to launch now (only in interactive mode)
+if [ "$INTERACTIVE" = true ]; then
+    read -p "🚀 Launch AICHE Desktop now? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo -e "${GREEN}Launching AICHE Desktop...${NC}"
+        open "/Applications/AICHE Desktop.app"
+    fi
+else
+    echo ""
+    echo -e "${GREEN}Auto-launching AICHE Desktop...${NC}"
     open "/Applications/AICHE Desktop.app"
 fi
 
