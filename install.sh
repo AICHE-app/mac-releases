@@ -15,6 +15,7 @@ fi
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}╔═══════════════════════════════════════╗${NC}"
@@ -73,8 +74,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Extract mount point - handle different possible volume names with spaces
-MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep "AICHE Desktop" | tail -1 | sed 's/.*\t\(\/Volumes\/AICHE Desktop.*\)$/\1/')
+# Extract mount point from hdiutil output
+MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep "/Volumes/AICHE Desktop" | awk -F'\t' '{print $3}' | tail -1)
 
 if [ -z "$MOUNT_POINT" ]; then
     # Fallback: try to find mount point differently
