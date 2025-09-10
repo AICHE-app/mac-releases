@@ -73,8 +73,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Extract mount point - handle different possible volume names
-MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep -E "AICHE Desktop" | tail -1 | awk '{print $NF}')
+# Extract mount point - handle different possible volume names with spaces
+MOUNT_POINT=$(echo "$MOUNT_OUTPUT" | grep "AICHE Desktop" | tail -1 | sed 's/.*\t\(\/Volumes\/AICHE Desktop.*\)$/\1/')
 
 if [ -z "$MOUNT_POINT" ]; then
     # Fallback: try to find mount point differently
